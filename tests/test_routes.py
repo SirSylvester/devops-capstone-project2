@@ -124,3 +124,95 @@ class TestAccountService(TestCase):
         self.assertEqual(response.status_code, status.HTTP_415_UNSUPPORTED_MEDIA_TYPE)
 
     # ADD YOUR TEST CASES HERE ...
+  def test_list_accounts(client):
+    """Test for listing all accounts"""
+    # Create two accounts to test the list function
+    account_1 = Account(name="Test1", address="Address1")
+    account_2 = Account(name="Test2", address="Address2")
+    account_1.create()
+    account_2.create()
+    
+    # Make GET request to the /accounts endpoint
+    response = client.get("/accounts")
+    
+    # Check the response status code
+    assert response.status_code == 200
+    
+    # Check that the response contains the accounts
+    data = response.get_json()
+    assert len(data) == 2  # Expect 2 accounts to be returned
+    assert data[0]['name'] == "Test1"
+    assert data[1]['name'] == "Test2"
+def test_read_account(client):
+    """Test for reading an account by ID"""
+    # Create an account to test the read function
+    account = Account(name="Test", address="Test Address")
+    account.create()
+    
+    # Make GET request to the /accounts/<id> endpoint
+    response = client.get(f"/accounts/{account.id}")
+    
+    # Check the response status code
+    assert response.status_code == 200
+    
+    # Check that the returned account data is correct
+    data = response.get_json()
+    assert data['name'] == "Test"
+    assert data['address'] == "Test Address"
+
+def test_read_account_not_found(client):
+    """Test reading a non-existent account"""
+    response = client.get("/accounts/999")  # Non-existent account
+    
+    # Check the response status code
+    assert response.status_code == 404
+def test_update_account(client):
+    """Test for updating an account"""
+    # Create an account to test the update function
+    account = Account(name="Test", address="Old Address")
+    account.create()
+    
+    # New data for the account update
+    updated_data = {"name": "Updated Test", "address": "New Address"}
+    
+    # Make PUT request to the /accounts/<id> endpoint
+    response = client.put(f"/accounts/{account.id}", json=updated_data)
+    
+    # Check the response status code
+    assert response.status_code == 200
+    
+    # Check that the account was updated
+    data = response.get_json()
+    assert data['name'] == "Updated Test"
+    assert data['address'] == "New Address"
+
+def test_update_account_not_found(client):
+    """Test updating a non-existent account"""
+    updated_data = {"name": "Updated Test", "address": "New Address"}
+    
+    response = client.put("/accounts/999", json=updated_data)  # Non-existent account
+    
+    # Check the response status code
+    assert response.status_code == 404
+def test_delete_account(client):
+    """Test for deleting an account"""
+    # Create an account to test the delete function
+    account = Account(name="Test", address="Test Address")
+    account.create()
+    
+    # Make DELETE request to the /accounts/<id> endpoint
+    response = client.delete(f"/accounts/{account.id}")
+    
+    # Check the response status code
+    assert response.status_code == 204  # Should return 204 NO CONTENT
+    
+    # Try to read the account again, it should return 404
+    response = client.get(f"/accounts/{account.id}")
+    assert response.status_code == 404
+
+def test_delete_account_not_found(client):
+    """Test deleting a non-existent account"""
+    response = client.delete("/accounts/999")  # Non-existent account
+    
+    # Check the response status code
+    assert response.status_code == 204  # Should return 204 NO CONTENT
