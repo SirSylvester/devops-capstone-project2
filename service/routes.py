@@ -79,8 +79,8 @@ def read_account(account_id):
     """Read an account by ID"""
     account = Account.find(account_id)
     if not account:
-        return jsonify({"error": "Account not found"}), 404
-    return jsonify(account.serialize()), 200
+        abort(status.HTTP_404_NOT_FOUND, description="Account not found")
+    return jsonify(account.serialize()), status.HTTP_200_OK
 
 
 ######################################################################
@@ -92,10 +92,10 @@ def update_account(account_id):
     """Update an account"""
     account = Account.find(account_id)
     if not account:
-        return jsonify({"error": "Account not found"}), 404
+        abort(status.HTTP_404_NOT_FOUND, description="Account not found")
     account.deserialize(request.get_json())
     account.update()
-    return jsonify(account.serialize()), 200
+    return jsonify(account.serialize()), status.HTTP_200_OK
 
 
 
@@ -109,7 +109,7 @@ def delete_account(account_id):
     account = Account.find(account_id)
     if account:
         account.delete()
-    return "", 204
+    return "", status.HTTP_204_NO_CONTENT
 
 
 
