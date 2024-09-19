@@ -66,7 +66,7 @@ def list_accounts():
     """List all accounts"""
     accounts = Account.all()  # Fetch all accounts from the database
     results = [account.serialize() for account in accounts]
-    return jsonify(results), 200  # Return 200 OK with the list of accounts
+    return jsonify(results), status.HTTP_200_OK  # Return 200 OK with the list of accounts
 
 
 
@@ -79,7 +79,7 @@ def read_account(account_id):
     """Read an account by ID"""
     account = Account.find(account_id)
     if not account:
-        abort(status.HTTP_404_NOT_FOUND, description="Account not found")
+        return jsonify({"error": "Account not found"}), status.HTTP_404_NOT_FOUND
     return jsonify(account.serialize()), status.HTTP_200_OK
 
 
@@ -92,7 +92,7 @@ def update_account(account_id):
     """Update an account"""
     account = Account.find(account_id)
     if not account:
-        abort(status.HTTP_404_NOT_FOUND, description="Account not found")
+        return jsonify({"error": "Account not found"}), status.HTTP_404_NOT_FOUND
     account.deserialize(request.get_json())
     account.update()
     return jsonify(account.serialize()), status.HTTP_200_OK
@@ -102,7 +102,6 @@ def update_account(account_id):
 ######################################################################
 # DELETE AN ACCOUNT
 ######################################################################
-
 @app.route("/accounts/<int:account_id>", methods=["DELETE"])
 def delete_account(account_id):
     """Delete an account"""
@@ -110,6 +109,7 @@ def delete_account(account_id):
     if account:
         account.delete()
     return "", status.HTTP_204_NO_CONTENT
+
 
 
 
