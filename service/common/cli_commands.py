@@ -12,13 +12,10 @@ from service.models import db
 ######################################################################
 @app.cli.command("db-create")
 def db_create():
-    """
-    Recreates a local database. You probably should not use this on
-    production. ;-)
-    """
+    """Recreates the database."""
     try:
-        db.drop_all()
-        db.create_all()
+        db.drop_all()  # Drop all tables
+        db.create_all()  # Create all tables
         db.session.commit()
         print("Database tables created successfully")
     except Exception as e:
