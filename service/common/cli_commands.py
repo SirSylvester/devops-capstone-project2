@@ -20,3 +20,10 @@ def db_create():
         print("Database tables created successfully")
     except Exception as e:
         print(f"Error creating database: {e}")
+def test_db_create():
+    """Test the db-create command"""
+    runner = app.test_cli_runner()
+    result = runner.invoke(args=["db-create"])
+    
+    assert result.exit_code == 0  # Ensure it exits successfully
+    assert "Database tables created successfully" in result.output
